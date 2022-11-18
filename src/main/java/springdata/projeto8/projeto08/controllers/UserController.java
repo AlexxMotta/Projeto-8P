@@ -4,42 +4,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import springdata.projeto8.projeto08.model.User;
+import springdata.projeto8.projeto08.repository.UserRepository;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/user")
 public class UserController {
 
-    private List<User> users = new ArrayList<>();
+    @Autowired
+    UserRepository userRepository;
 
-    @GetMapping("/{id}")
-    public User user(@PathVariable("id") Long id) {
-        // filtra o array de users com a condição de o user.id == id,
-        // pengando apenas a primeira ocorrencia
-        Optional<User> userFind = users.stream().filter(user -> user.getId() == id).findFirst();
-
-        if (userFind.isPresent()) {
-            return userFind.get();
-        }
-        return null;
+    @GetMapping
+    Iterable<User> getUsers() {
+        return userRepository.findAll();
     }
 
     @PostMapping
-    public User user(@RequestBody User user) {
-        users.add(user);
-        return user;
+    User addUser(@RequestBody User user) {
+        return userRepository.save(user);
     }
-
-    @GetMapping("/list")
-    public List<User> list() {
-        return users;
-    }
-
 }
